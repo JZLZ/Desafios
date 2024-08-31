@@ -3,7 +3,7 @@ Enquanto K < INDICE faça { K = K + 1; SOMA = SOMA + K; }
 Imprimir(SOMA);
 Ao final do processamento, qual será o valor da variável SOMA?*/
 
-public class resolution_1 {
+public class resposta01 {
 
     public static void main(String[] args) {
         //Declaração de variaveis
