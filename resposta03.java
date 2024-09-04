@@ -8,7 +8,6 @@ IMPORTANTE:
 a) Usar o json ou xml disponível como fonte dos dados do faturamento mensal;
 b) Podem existir dias sem faturamento, como nos finais de semana e feriados.
 Estes dias devem ser ignorados no cálculo da média;*/
-
 import java.io.File;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,7 +19,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class resposta03 {
-
     public static void main(String[] args) {
         try {
             // Carregar o arquivo XML
@@ -28,25 +26,21 @@ public class resposta03 {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(xmlFile);
-
-            // Normalizar o XML
             document.getDocumentElement().normalize();
-
-            // Obter todos os elementos "dia"
-            NodeList nodeList = document.getElementsByTagName("dia");
+            NodeList nodeList = document.getElementsByTagName("row");
 
             double menorFaturamento = Double.MAX_VALUE;
             double maiorFaturamento = Double.MIN_VALUE;
             double somaFaturamento = 0.0;
             int diasComFaturamento = 0;
 
-            // Processar os elementos "dia"
+            // Processar os elementos "row"
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
 
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
-                    double valor = Double.parseDouble(element.getTextContent());
+                    double valor = Double.parseDouble(element.getElementsByTagName("valor").item(0).getTextContent());
 
                     // Ignorar dias sem faturamento
                     if (valor > 0) {
@@ -62,8 +56,8 @@ public class resposta03 {
                 }
             }
 
-            // Calcular a média mensal considerando apenas os dias com faturamento
-            double mediaMensal = somaFaturamento / diasComFaturamento;
+            // Calcular a média mensal
+            double mediaMensal = somaFaturamento / 30;
 
             // Contar o número de dias com faturamento acima da média
             int diasAcimaDaMedia = 0;
@@ -72,16 +66,20 @@ public class resposta03 {
 
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
-                    double valor = Double.parseDouble(element.getTextContent());
-                    if (valor > mediaMensal) {
+                    double valor = Double.parseDouble(element.getElementsByTagName("valor").item(0).getTextContent());
+                    if (valor > 0 && valor > mediaMensal) {
                         diasAcimaDaMedia++;
                     }
                 }
             }
+            //Formatando valores para exibir duas casas decimais
+            String menorFat = String.format("%.2f", menorFaturamento);
+            String maiorFat = String.format("%.2f", maiorFaturamento);
+            String media = String.format("%.2f", mediaMensal);
 
-            // Exibir os resultados
-            System.out.println("Menor faturamento do mês: R$ " + menorFaturamento);
-            System.out.println("Maior faturamento do mês: R$ " + maiorFaturamento);
+            System.out.println("Menor faturamento do mês: R$ " + menorFat);
+            System.out.println("Maior faturamento do mês: R$ " + maiorFat);
+            System.out.println("Média do mês: R$ " + media);
             System.out.println("Número de dias com faturamento acima da média mensal: " + diasAcimaDaMedia);
 
         } catch (Exception e) {
